@@ -1,26 +1,423 @@
+/* =========================================================
+   zuk-zuk template — Base styles
+   AI STUDIO から抽出した共通レイアウト基盤。
+   案件固有のセクションスタイルは別ファイル or このファイル末尾に追記する。
+   ========================================================= */
+
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* --- Palette (monochrome by default, override per project) --- */
+  --sumi:        #1A1A1A;
+  --paper:       #FFFFFF;
+  --paper-2:     #FFFFFF;
+  --paper-soft:  #FAFAFA;
+  --fg-2:        #595959;
+  --fg-3:        #B3B3B3;
+  --shu:         #1A1A1A;
+  --shu-dark:    #1A1A1A;
+  --hairline:    #E5E5E5;
+  --hairline-2:  #EFEFED;
+
+  /* semantic */
+  --fg:          var(--sumi);
+  --bg:          var(--paper);
+
+  /* --- Type ---
+     Adobe Fonts (Montserrat / ShizukaRDGo) を優先、未設定なら next/font の
+     Zen Kaku Gothic + Caveat にフォールバック。 */
+  --font-montserrat: montserrat;
+  --font-jp-sans:  var(--font-montserrat), "tot-shizukardgo-stdn", var(--font-zen-kaku), "Yu Gothic", "游ゴシック", sans-serif;
+  --font-jp-serif: var(--font-jp-sans);
+  --font-latin:    var(--font-montserrat), system-ui, sans-serif;
+  --font-ui:       var(--font-jp-sans);
+  --font-script:   var(--font-caveat), cursive;
+
+  /* --- Layout --- */
+  --max-w:       1200px;
+  --max-text:    880px;
+  --gutter:      clamp(20px, 4vw, 56px);
+  --section-y:   clamp(80px, 12vw, 160px);
+
+  /* --- Motion --- */
+  --ease:        cubic-bezier(0.2, 0.8, 0.2, 1);
+  --dur:         280ms;
+  --dur-fast:    160ms;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
+* , *::before, *::after { box-sizing: border-box; }
+html { -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; scroll-behavior: smooth; }
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-jp-sans);
+  font-size: 14px;
+  line-height: 1.95;
+  letter-spacing: 0.14em;
+  font-weight: 500;
+  font-feature-settings: "palt" 1, "kern" 1;
+}
+::selection { background: rgba(196,69,69,0.22); color: var(--sumi); }
+img { max-width: 100%; display: block; }
+a { color: inherit; text-decoration: none; }
+button { font-family: inherit; cursor: pointer; }
+
+/* ---------- Font loading splash (FOUT 対策) ----------
+   Adobe Fonts (Typekit) は async ロードのため、初回読込時に
+   fallback フォント → ブランドフォントへの flash が見える。
+   それを覆い隠す上品な splash 画面。
+   - 通常時 (no JS / フォント読込済み): hidden（SEO・bot 対応 + 体感速度確保）
+   - wf-loading: 表示
+   - wf-active / wf-inactive: 600ms フェードアウト */
+.font-splash {
+  position: fixed;
+  inset: 0;
+  background: var(--paper);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 600ms ease, visibility 0s linear 600ms;
+}
+html.wf-loading .font-splash {
+  opacity: 1;
+  visibility: visible;
+  transition: none;
+}
+.font-splash-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+}
+.font-splash-mark {
+  width: 140px;
+  height: auto;
+  opacity: 0;
+  transform: translateY(4px);
+  animation: font-splash-rise-in 500ms cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+.font-splash-sub {
+  margin-top: 4px;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.28em;
+  color: var(--sumi);
+}
+.font-splash-progress {
+  position: relative;
+  width: 200px;
+  height: 1px;
+  margin-top: 56px;
+}
+.font-splash-progress-track {
+  position: absolute;
+  inset: 0;
+  background: var(--hairline);
+}
+.font-splash-progress-bar {
+  position: absolute;
+  inset: 0;
+  background: var(--sumi);
+  transform: scaleX(0);
+  transform-origin: left center;
+  animation: font-splash-progress-fill 2000ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+.font-splash-label {
+  margin-top: 14px;
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 0.4em;
+  color: var(--fg-3);
+}
+@keyframes font-splash-rise-in {
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes font-splash-progress-fill {
+  to { transform: scaleX(1); }
+}
+
+/* ---------- Latin auto-wrap ----------
+   AutoLatinWrap.tsx が <span class="latin-soft"> を挿入する。
+   - font-weight: inherit で親要素の重みを継承
+   - font-size: 1.06em で気持ち大きく、視覚的サイズを揃える
+   - vertical-align: -0.06em でベースラインを少し下げる */
+.latin-soft {
+  font-weight: inherit;
+  font-size: 1.06em;
+  vertical-align: -0.06em;
+}
+.h-display .latin-soft,
+.h-section .latin-soft {
+  font-weight: 600;
+}
+
+/* ---------- Typography helpers ---------- */
+h2 { letter-spacing: 0.1em; }
+.t-overline {
+  font-family: var(--font-latin);
+  font-weight: 500;
+  font-size: 12px;
+  text-transform: uppercase;
+  color: var(--fg-2);
+  letter-spacing: 0.18em;
+}
+.t-overline-light {
+  font-family: var(--font-latin);
+  font-weight: 400;
+  font-size: 11px;
+  text-transform: uppercase;
+  color: var(--fg-3);
+  letter-spacing: 0.18em;
+}
+.h-display {
+  font-family: var(--font-jp-sans);
+  font-weight: 700;
+  font-size: clamp(38px, 5.6vw, 76px);
+  line-height: 1.42;
+  margin: 0;
+}
+.h-section {
+  font-family: var(--font-jp-sans);
+  font-weight: 700;
+  font-size: clamp(28px, 3.4vw, 44px);
+  line-height: 1.5;
+  margin: 0;
+}
+.h-card {
+  font-family: var(--font-jp-sans);
+  font-weight: 700;
+  font-size: clamp(20px, 1.8vw, 26px);
+  line-height: 1.6;
+  margin: 0;
+}
+.shu { color: var(--shu); }
+
+/* ---------- Page wrapper ---------- */
+.app { min-height: 100vh; display: flex; flex-direction: column; background: var(--paper); }
+.wrap {
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: 0 var(--gutter);
+}
+.wrap-narrow { max-width: var(--max-text); margin: 0 auto; padding: 0 var(--gutter); }
+
+/* ---------- Header / Nav ---------- */
+.nav {
+  position: fixed; top: 0; left: 0; right: 0;
+  z-index: 50;
+  background: transparent;
+  border-bottom: none;
+  height: 112px;
+}
+.nav-inner {
+  height: 100%;
+  max-width: none;
+  margin: 20px auto;
+  padding: 0 var(--gutter);
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 24px;
+}
+.brand-lockup { display: flex; flex-direction: column; align-items: center; line-height: 1; gap: 4px; }
+.brand-mark {
+  width: 160px;
+  height: auto;
+  display: block;
+}
+.brand-sub {
+  font-family: var(--font-ui);
+  font-weight: 600;
+  font-size: 16px;
+  text-transform: uppercase;
+  color: var(--sumi);
+  letter-spacing: 0.12em;
+  margin-top: -4px;
+}
+.nav-links { display: flex; align-items: center; gap: clamp(16px, 2.6vw, 24px); }
+.nav-link {
+  position: relative;
+  font-family: var(--font-latin);
+  font-weight: 600;
+  font-size: 12px;
+  text-transform: uppercase;
+  color: var(--sumi);
+  background: none; border: none; padding: 6px 0;
+  transition: color var(--dur-fast) var(--ease);
+  letter-spacing: 0.18em;
+}
+.nav-link::after {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform var(--dur) var(--ease);
+}
+.nav-link:hover::after { transform: scaleX(1); }
+.nav-right { display: flex; align-items: center; gap: 36px; }
+.nav-cta {
+  font-family: var(--font-latin);
+  font-weight: 600;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  background: var(--sumi);
+  color: var(--paper);
+  padding: 12px 20px;
+  border: none;
+  border-radius: 2px;
+  transition: background var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease);
+}
+.nav-cta:hover { background: #2C2C2C; }
+
+.menu-btn {
+  display: none;
+  background: none; border: 1px solid var(--sumi);
+  width: 40px; height: 40px;
+  border-radius: 2px;
+  align-items: center; justify-content: center;
+}
+
+/* ---------- Section frames ---------- */
+.section {
+  padding: var(--section-y) 0;
+  position: relative;
+}
+.section.alt { background: var(--paper-soft); }
+.section-head {
+  text-align: center;
+  margin-bottom: clamp(48px, 6vw, 80px);
+  display: flex; flex-direction: column; align-items: center; gap: 20px;
+}
+.section-head .label { display: flex; align-items: center; gap: 14px; }
+.section-head .label::before,
+.section-head .label::after {
+  content: ""; display: inline-block; width: 24px; height: 1px; background: var(--fg-3);
+}
+.section-head .sub {
+  max-width: 720px;
+  color: var(--fg-2);
+  font-size: 14px;
+  line-height: 2;
+  margin-top: 32px;
+  white-space: pre-line;
+}
+
+/* ---------- Hero (minimal placeholder, override per project) ---------- */
+.hero {
+  padding: calc(72px + 96px) 0 120px;
+  position: relative;
+  text-align: center;
+}
+.hero .wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 32px;
+}
+.hero-sub {
+  max-width: 640px;
+  margin: 0 auto;
+  color: var(--fg-2);
+  font-size: 15px;
+  line-height: 2;
+}
+
+/* ---------- Footer ---------- */
+.footer {
+  background: var(--paper);
+  border-top: 1px solid var(--hairline);
+  padding: 80px 0 32px;
+  margin-top: auto;
+}
+.footer-grid {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr;
+  gap: clamp(32px, 5vw, 64px);
+  padding-bottom: 56px;
+  border-bottom: 1px solid var(--hairline);
+}
+.footer .brand-lockup {
+  width: fit-content;
+  margin: -10px 0 0 -12px;
+}
+.footer-col h4 {
+  font-family: var(--font-latin);
+  font-weight: 500;
+  font-size: 11px;
+  text-transform: uppercase;
+  color: var(--fg-3);
+  margin: 0 0 24px;
+  letter-spacing: 0.18em;
+}
+.footer-col ul { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 14px; }
+.footer-col li a {
+  font-family: var(--font-jp-sans);
+  font-size: 13.5px;
+  color: var(--fg-2);
+}
+.footer-col li a:hover { color: var(--sumi); }
+.footer-blurb {
+  margin-top: 24px;
+  font-family: var(--font-jp-sans);
+  font-size: 13px;
+  line-height: 1.95;
+  color: var(--fg-2);
+  max-width: 320px;
+  white-space: pre-line;
+}
+.footer-bot {
+  padding-top: 32px;
+  display: flex; justify-content: space-between; align-items: center;
+  font-family: var(--font-latin);
+  font-size: 11px;
+  text-transform: uppercase;
+  color: var(--fg-3);
+  flex-wrap: wrap;
+  gap: 16px;
+  letter-spacing: 0.18em;
+}
+
+/* ---------- Mobile menu overlay ---------- */
+.mobile-menu {
+  position: fixed; inset: 72px 0 0 0;
+  z-index: 49;
+  background: var(--paper);
+  padding: 40px var(--gutter);
+  display: none;
+  flex-direction: column;
+  gap: 32px;
+}
+.mobile-menu.open { display: flex; }
+.mobile-menu a {
+  font-family: var(--font-jp-serif);
+  font-weight: 700;
+  font-size: 22px;
+  color: var(--sumi);
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--hairline);
+}
+.mobile-menu a .en {
+  font-family: var(--font-latin);
+  font-weight: 400;
+  font-size: 12px;
+  color: var(--fg-3);
+  letter-spacing: 0.18em;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 768px) {
+  .nav-links { display: none; }
+  .menu-btn { display: flex; }
+  .footer-grid { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 480px) {
+  .footer-grid { grid-template-columns: 1fr; }
 }
