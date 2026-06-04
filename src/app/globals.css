@@ -421,3 +421,35 @@ h2 { letter-spacing: 0.1em; }
 @media (max-width: 480px) {
   .footer-grid { grid-template-columns: 1fr; }
 }
+
+/* ---------- 404 Not Found ---------- */
+.not-found {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 80px var(--gutter);
+}
+.not-found-content {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  max-width: 480px;
+  margin: 0 auto;
+}
+.not-found-code {
+  color: var(--fg-3);
+  letter-spacing: 0.3em;
+}
+.not-found-message {
+  color: var(--fg-2);
+  line-height: 2;
+  margin: 0;
+}
+.not-found-cta {
+  margin-top: 16px;
+  display: inline-flex;
+  text-decoration: none;
+}
