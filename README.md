@@ -9,14 +9,15 @@
 |---|---|
 | 基盤 | Next.js 16.2.6 / TypeScript 5 / Tailwind CSS v4 / Turbopack / React 19 |
 | フォント | Google Fonts (Zen Kaku Gothic + Caveat) + Adobe Fonts オプション (Typekit kitId を環境変数で指定) |
-| 共通コンポーネント | `Header` / `Footer` / `BrandLockup` / `SectionHead` / `Icons` / `AutoLatinWrap` / `FontLoadingController` |
-| スタイル基盤 | `globals.css` に CSS 変数 / FOUT 対策 splash / 共通レイアウト (nav, footer, mobile-menu, section, hero) |
-| 動作確認用 | `src/app/page.tsx` に Hero + About + Footer の最小ランディング |
+| 共通コンポーネント | `Header` / `Footer` / `BrandLockup` / `SectionHead` / `Icons` / `AutoLatinWrap` / `FontLoadingController` / `FaqAccordion` |
+| スタイル基盤 | `globals.css` に CSS 変数 / FOUT 対策 splash / 共通レイアウト (nav, footer, mobile-menu, section, hero, **404**, **faq-accordion**) |
+| 動作確認用 | `src/app/page.tsx` に Hero + About + **FAQ** + Footer の最小ランディング |
+| エラーページ | `src/app/not-found.tsx` で App Router 標準の 404 ページ |
 | メタデータ | 動的 metadata (title / description / OGP / Twitter / robots) + JSON-LD (Organization + WebSite) |
 
 ## 含まれないもの (案件次第で追加)
 
-- 業務固有のセクション (Service / Plans / Works / FAQ 等) → 案件で実装
+- 業務固有のセクション (Service / Plans / Works 等) → 案件で実装
 - お問い合わせフォーム (Web3Forms) → Skill `setup-contact-form-web3forms` で組み込み
 - Sanity CMS 連携 → Skill `setup-sanity-cms` で組み込み
 - 法務ページ (利用規約 / プライバシー / 特商法) → Skill `setup-legal-pages` で組み込み
