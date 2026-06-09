@@ -1,6 +1,6 @@
 ---
 name: setup-seo-ogp
-description: Next.js 16 App Router で SEO / OGP / 構造化データ / 動的 OG 画像生成 を整備する標準手順。「SEO 対策」「OGP 設定」「構造化データ」「JSON-LD」「sitemap 作って」「robots.txt」「メタタグ整備」「Google にインデックスされない」「SNS シェア時の画像」など、SEO 対応や OGP 整備に関する発言があったら必ず使う。
+description: Next.js 16 App Router で SEO / OGP / 構造化データ / 動的 OG 画像生成 を整備する標準手順。「SEO 対策」「OGP 設定」「構造化データ」「JSON-LD」「sitemap 作って」「robots.txt」「メタタグ整備」「Google にインデックスされない」「SNS シェア時の画像」「OGP 画像」「OG 画像」「正方形に収めて」「LINE シェアで切れる」「Slack で OG 画像」「Discord で OG」「OGP 1:1 クロップ」「Twitter Card」 など、SEO 対応や OGP 整備、 OG 画像のレイアウト調整に関する発言があったら必ず使う。
 ---
 
 # SEO / OGP / 構造化データ 整備 (zuk-zuk 標準)
@@ -173,7 +173,23 @@ const jsonLd = {
 | 物販 EC | `Store` / `Product` (商品個別) |
 | 教育・スクール | `EducationalOrganization` |
 
-### Step 5. 動的 OG 画像 (`opengraph-image.tsx`)
+### Step 5. 動的 OG 画像 (`opengraph-image.tsx`) ⭐ **正方形セーフエリア必須**
+
+#### 🚨 重要ルール: 中央 630x630 セーフエリア
+
+OG 画像は **1200x630 (アスペクト比 1.91:1)** が標準だが、 **LINE / Slack / Discord / iMessage 等は 1:1 正方形でクロップ** する。 横長配置だと左右の重要情報が切れる。
+
+→ **全コンテンツを中央 630x630 セーフエリアに集約** する。 左右の各 285px は装飾のみ。
+
+```
+┌────────────────────────────────────────────────┐ 1200x630 (Twitter/Facebook 全表示)
+│ 装飾 │ ◆中央セーフエリア 630x630 (LINE/Slack/Discord で見える範囲) ◆ │ 装飾 │
+│ 285  │   ロゴ / タイトル / subtitle / 統計 等の主要情報を集約        │ 285  │
+│      │                                                                │      │
+└────────────────────────────────────────────────┘
+```
+
+#### 実装テンプレ (推奨パターン)
 
 `src/app/opengraph-image.tsx`:
 
@@ -186,6 +202,8 @@ export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
 export default async function Image() {
+  const SAFE = 630; // 中央正方形セーフエリア
+
   return new ImageResponse(
     (
       <div
@@ -194,17 +212,51 @@ export default async function Image() {
           height: "100%",
           background: "#FFFFFF",
           display: "flex",
-          flexDirection: "column",
+          justifyContent: "center",  // ← 中央寄せ
           alignItems: "center",
-          justifyContent: "center",
-          padding: 80,
+          position: "relative",
         }}
       >
-        <div style={{ fontSize: 60, fontWeight: 700, color: "#1A1A1A", textAlign: "center" }}>
-          {SITE.name}
-        </div>
-        <div style={{ fontSize: 24, color: "#595959", marginTop: 20, textAlign: "center" }}>
-          {SITE.description}
+        {/* 左右の装飾 (任意、 横長表示時の間延び防止) */}
+        <div style={{ position: "absolute", left: 80, top: 80, bottom: 80, width: 1, background: "#1A1A1A", opacity: 0.1 }} />
+        <div style={{ position: "absolute", right: 80, top: 80, bottom: 80, width: 1, background: "#1A1A1A", opacity: 0.1 }} />
+
+        {/* 中央 630x630 正方形セーフエリア */}
+        <div
+          style={{
+            width: SAFE,
+            height: SAFE,
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "space-between",  // 上中下 配置
+            padding: 60,
+          }}
+        >
+          {/* top: eyebrow / logo */}
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <div style={{ fontSize: 18, letterSpacing: 6, color: "#595959", textTransform: "uppercase" }}>
+              {SITE.tagline ?? "Brand Tagline"}
+            </div>
+            {/* ロゴ枠 */}
+            <div style={{ width: 64, height: 64, border: "2px solid #1A1A1A", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 24 }}>
+              {SITE.initial ?? "X"}
+            </div>
+          </div>
+
+          {/* center: title (※ 長い場合は 2 行に分割) */}
+          <div style={{ display: "flex", flexDirection: "column" }}>
+            <div style={{ fontSize: 68, fontWeight: 700, color: "#1A1A1A", lineHeight: 1.05 }}>
+              {SITE.name}
+            </div>
+            <div style={{ fontSize: 22, color: "#595959", marginTop: 20, lineHeight: 1.4 }}>
+              {SITE.description}
+            </div>
+          </div>
+
+          {/* bottom: 統計やバッジ等 (任意) */}
+          <div style={{ display: "flex", gap: 36 }}>
+            {/* 数字とラベルのペア */}
+          </div>
         </div>
       </div>
     ),
@@ -213,7 +265,27 @@ export default async function Image() {
 }
 ```
 
+#### 設計の判断基準
+
+| コンテンツ | 配置先 |
+|---|---|
+| タイトル / ロゴ / メインメッセージ / 重要統計 | **中央 630x630 セーフエリア内 (必須)** |
+| 装飾 (border / 縦線 / グラデーション 等) | 左右の余白 (各 285px) |
+| 1200x630 全幅で表示される時の余白埋め | 左右の装飾で間延び防止 |
+
+#### フォントサイズの目安 (正方形セーフ前提)
+
+| 要素 | サイズ |
+|---|---|
+| メインタイトル | 60-72 (長い場合は 2 行に分割) |
+| サブタイトル | 20-28 (長い場合は 2 行折り返し or 短縮) |
+| Eyebrow / ラベル | 16-22 |
+| 統計の数字 | 36-48 |
+| 統計のラベル | 14-18 (省略表記 OK: "Property owners" → "Owners") |
+
 > 💡 案件次第でフォント (Next/font の woff2) を `ImageResponse` の `fonts` オプションで読み込み可能。
+>
+> 💡 **検証**: ローカルで `http://localhost:3000/opengraph-image` を表示 → **中央 630x630 だけ手動でクロップして全情報が読めるか確認**。 切れたら修正。
 
 ### Step 6. ページ別 metadata (お知らせ詳細など)
 
@@ -261,10 +333,18 @@ GA4 + Search Console 連携は **`setup-google-analytics-search-console`** Skill
 - **業種に合った schema.org type** を使う (上記表参照)
 - 検証: https://search.google.com/test/rich-results で URL を入力
 
-### ❌ OG 画像のサイズ
-- 1200 x 630 が標準 (Twitter / Facebook / LINE 共通)
+### ❌ OG 画像のサイズ / 正方形クロップ問題 ⭐ 最頻発
+- **画像サイズは 1200 x 630** が標準 (Twitter / Facebook / LINE 共通、 アスペクト比 1.91:1)
+- ⚠️ **コンテンツ配置は中央 630x630 セーフエリアに集約必須** (Step 5 参照)
+- LINE / Slack / Discord / iMessage は **1:1 正方形クロップ** で表示する → 横長配置だと左右が切れる
+- 「タイトルが横長配置」「ロゴが左端、 統計が右端」 は **NG**、 全部中央 630x630 に
 - 1200 x 600 や 1080 x 1080 だと Twitter で切れる
-- アスペクト比 1.91:1 を厳守
+- アスペクト比 1.91:1 を厳守、 ただし内側のレイアウトは 1:1 セーフ
+
+### ❌ OG 画像のレイアウトで「とりあえず space-between で全幅広げ」
+- 過去事例: 税理士サンプル (#67) で 1200x630 全幅にコンテンツ配置 → LINE シェアで左右切れ
+- → 修正: 中央 630x630 ラッパー導入で解決
+- 教訓: **OG 画像のレイアウトは「正方形セーフ」 がデフォルト**、 横長活用はオプション
 
 ### ❌ sitemap.ts で動的ページが含まれない
 - Sanity 等 CMS のデータも sitemap に含める必要あり
