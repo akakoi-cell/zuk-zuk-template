@@ -102,6 +102,14 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 # 🔓 完全権限渡し / bypassPermissions (2026-06-10 採用)
 
+
+## ② FleetView (Claude.ai) は別ルート
+
+`bypassPermissions` フラグは CLI 専用。 FleetView では プロジェクトルート
+`/Users/kakoiatsushi/Projects/zuk-zuk AI DESIGN STUDIO/.claude/settings.json` を参照 (allow 130 件 / deny 17 件)。
+残るダイアログは「常に許可」 で蓄積。 詳細は `../zuk-zuk-ai-studio/AGENTS.md`。
+
+## ① CLI 起動コマンド
 CLI 起動コマンド:
 ```bash
 caffeinate -i claude --permission-mode bypassPermissions
