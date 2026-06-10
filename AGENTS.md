@@ -70,7 +70,7 @@ This version has breaking changes — APIs, conventions, and file structure may 
 ```
 
 ## 実装
-- 受信時に冒頭 `[nn]` をパース (なし=30、 `-` =無制限)
+- 受信時に文末 `[nn]` をパース (なし=30、 `-` =無制限)
 - `date +%s` で start を記録 → 各ステップ後に経過チェック
 - 超過したら次の自然な区切りで完了 → 標準フォーマットで報告
 
