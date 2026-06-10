@@ -78,6 +78,23 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 ---
 
+# 🌐 ZAS ポート割当 (2026-06-10 体系化)
+
+| Port | 用途 |
+|---|---|
+| 3000 | ZAS サイト (zuk-zuk-ai-studio) |
+| 3001 | template (動作確認) |
+| 3004 | zuk-zuk-samples (全サンプル共通) |
+| 3010 | SALOON WELL |
+| 3011 | Support link |
+| 3012 | Hello Tree |
+| 3013 | & moi |
+| 3014〜 | 新規案件 |
+
+→ 詳細: `../zuk-zuk-ai-studio/AGENTS.md` ZAS ポート割当
+
+---
+
 # 📛 命名規則 (2026-06-10 採用)
 
 | 略称 | 指すもの |
