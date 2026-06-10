@@ -117,7 +117,11 @@
       "Bash(git push origin main *)",
       "Bash(nohup *)",
       "Bash(* && nohup *)",
-      "Bash(env PORT=* npm *)"
+      "Bash(env PORT=* npm *)",
+      "Edit(*)",
+      "Write(*)",
+      "Read(*)",
+      "Bash(*)"
     ],
     "deny": [
       "Bash(rm -rf /)",

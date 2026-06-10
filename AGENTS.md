@@ -45,6 +45,32 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 → 詳細は `../zuk-zuk-ai-studio/docs/CLIENT_PROJECT_FLOW.md` Phase 0 参照
 
+---
+
+# 🚀 自走モード (2026-06-10 採用)
+
+zuk-zuk プロジェクトでは全 Claude セッションが「自走モード」 で運用される。
+
+## ルール
+
+### 🟢 user に確認する (AskUserQuestion 等を使う)
+- **大方針の決定** (例: 「サンプルどっち先に作る?」「店名は何にする?」)
+- **削除 / 取り消し** (例: 「Footer の tagline も消す?」)
+- **新規 機能 / 新規 案件**
+- **複数の選択肢からの選定**
+
+### 🔴 user に確認しない (黙って実行)
+- **Edit / Write / Read** — 編集系は許可待ちなし
+- **Bash 実行** — settings.json の deny に該当しない限り自走
+- **動作確認 / 検証** — curl / preview / dev server 起動等
+- **ステップ間の「これでいいですか?」 確認** — 全部完了してから報告
+- **個別修正の途中確認** — 5 件の修正リストなら 5 件全部実装 → 完了報告
+
+→ 詳細: `../zuk-zuk-ai-studio/AGENTS.md` 自走モードセクション
+
+---
+
+
 ## 改訂履歴
 
 - 2026-06-09: 初版 (Phase 0 ルール / CMS 統一方針を反映)
