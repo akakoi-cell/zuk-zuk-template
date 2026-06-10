@@ -48,6 +48,18 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 ---
 
+# 📛 命名規則 (2026-06-10 採用)
+
+| 略称 | 指すもの |
+|---|---|
+| **ZAS** (ザス) | サービス「zuk-zuk AI STUDIO」 自体 |
+| **ZAS OPS** | OPS セッション (業務ルール / 進捗管理) |
+| **ZAS サイト** | https://ai-studio.zuk-zuk.com/ + リポジトリ zuk-zuk-ai-studio |
+
+→ 詳細: `../zuk-zuk-ai-studio/AGENTS.md` 命名規則セクション
+
+---
+
 # 🎯 セッション役割分担 (2026-06-10 採用)
 
 - **OPS セッション** = FleetView メインチャット (業務ルール / 進捗管理 / 引き継ぎパッケージ作成、 コード編集はしない)
