@@ -121,7 +121,17 @@
       "Edit(*)",
       "Write(*)",
       "Read(*)",
-      "Bash(*)"
+      "Bash(*)",
+      "Bash",
+      "Edit",
+      "Write",
+      "Read",
+      "Glob",
+      "Grep",
+      "WebFetch",
+      "WebSearch",
+      "TodoWrite",
+      "NotebookEdit"
     ],
     "deny": [
       "Bash(rm -rf /)",
