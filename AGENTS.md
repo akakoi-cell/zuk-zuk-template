@@ -48,7 +48,7 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 ---
 
-# ⏱ 依頼時間制限ルール (2026-06-10 採用)
+# ⏱ タイムボックス (2026-06-10 採用)
 
 | 表記 | 意味 |
 |---|---|
