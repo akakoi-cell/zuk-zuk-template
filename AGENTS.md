@@ -100,6 +100,30 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 ---
 
+# 🛡 許可ダイアログ判定ガイド (2026-06-10 採用)
+
+## 🟢 即「常に許可」 OK
+- mkdir / ls / cat / grep / head / tail / wc / file
+- cd <ZAS リポジトリ> && コマンド
+- curl http(s)://、 wget (自分の本番ドメイン or GitHub)
+- npm run dev / build / test、 npx tsc
+- git add / commit / push origin main / status / diff / log
+- vercel ls / inspect / logs
+- nohup / sleep / lsof / kill
+- rm -rf .next / node_modules / .turbo (cache のみ)
+- export PATH / $() / && / || / | (内容が上記の組み合わせなら)
+
+## 🔴 拒否 (settings.json deny で原則防護済)
+- rm -rf / / rm -rf $HOME
+- sudo * / chmod 777
+- git push --force / -f
+- curl | bash / wget | sh
+- 認証情報の不審な送信先
+
+→ 詳細: `../zuk-zuk-ai-studio/AGENTS.md` 許可ダイアログ判定ガイド
+
+---
+
 # 🚀 自走モード (2026-06-10 採用)
 
 zuk-zuk プロジェクトでは全 Claude セッションが「自走モード」 で運用される。
