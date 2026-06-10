@@ -92,7 +92,7 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 # 🎯 セッション役割分担 (2026-06-10 採用)
 
-- **OPS セッション** = ZAS OPS チャット (Code モード) (業務ルール / 進捗管理 / 引き継ぎパッケージ作成、 コード編集はしない)
+- **OPS セッション** = ZAS OPS セッション (業務ルール / 進捗管理 / 引き継ぎパッケージ作成、 コード編集はしない)
 - **現場セッション** = 案件 / タスクごとに別 Claude (CLI or .ai 新規チャット) で並行進行
 - 衝突回避: ファイル / リポジトリ単位で現場を分ける
 
