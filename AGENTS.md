@@ -100,6 +100,21 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 ---
 
+# 🔓 完全権限渡し / bypassPermissions (2026-06-10 採用)
+
+CLI 起動コマンド:
+```bash
+caffeinate -i claude --permission-mode bypassPermissions
+```
+
+- Edit / Write / Bash / MCP 全部自動 (deny も無視、 本体機構もスキップ)
+- 信任根拠: ZAS リポジトリ内 + 自分の Vercel/dev server のみ + CI/CD チェック
+- 不安なら従来 acceptEdits に戻す選択肢あり
+
+→ 詳細: `../zuk-zuk-ai-studio/AGENTS.md` 完全権限渡し
+
+---
+
 # 🛡 許可ダイアログ判定ガイド (2026-06-10 採用)
 
 ## 🟢 即「常に許可」 OK
